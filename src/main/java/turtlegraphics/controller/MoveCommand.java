@@ -24,13 +24,21 @@ public class MoveCommand implements Command {
     
     @Override
     public void execute(TurtleModel model, String[] args) throws CommandException {
-        // TODO: Implement move command
-        // 1. Validate that exactly 1 argument is provided
-        // 2. Parse the argument as a double (distance)
-        // 3. Call model.move(distance)
-        // 4. Throw CommandException if validation fails
+        // Validate argument count
+        if (args.length != 1) {
+            throw new CommandException("Invalid number of arguments. Usage: " + getUsage());
+        }
         
-        throw new UnsupportedOperationException("TODO: Implement MoveCommand.execute");
+        // Parse distance argument
+        double distance;
+        try {
+            distance = Double.parseDouble(args[0]);
+        } catch (NumberFormatException e) {
+            throw new CommandException("Invalid distance: '" + args[0] + "' is not a valid number", e);
+        }
+        
+        // Execute the move
+        model.move(distance);
     }
     
     @Override

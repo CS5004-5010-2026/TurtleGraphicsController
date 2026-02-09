@@ -1,105 +1,68 @@
-# Turtle Graphics Controller - In-Class Exercise
+# Turtle Graphics GUI Application
 
-Build a Turtle Graphics Controller using MVC architecture and the Command Pattern.
+A Java-based educational application demonstrating the Model-View-Controller (MVC) architectural pattern through an interactive turtle graphics environment. Users control a visible turtle on a graphical canvas using text commands, creating drawings in real-time.
 
-## What You'll Build
+## Features
 
-In this exercise, you'll implement the Controller layer for a Turtle Graphics application. The Model and View are provided - you focus on command processing.
+- **Interactive GUI**: 800x600 pixel canvas with real-time turtle visualization
+- **Text-based Commands**: Simple command interface for controlling the turtle
+- **MVC Architecture**: Clean separation between Model, View, and Controller components
+- **Visual Feedback**: Turtle changes color based on pen state (red = drawing, blue = not drawing)
+- **Command History**: Scrollable history of all entered commands
+- **Error Handling**: Clear error messages for invalid commands or parameters
 
-### Provided (Complete)
-- ✅ **TurtleModel** - State management (position, heading, pen state)
-- ✅ **TurtleView** - GUI with canvas and command history
-- ✅ **Test Suite** - Comprehensive tests to verify your implementation
+## Architecture
 
-### Your Task (Implement)
-- ❌ **TurtleController** - Parse and execute commands
-- ❌ **8 Command Classes** - move, turn, penup, pendown, clear, reset, quit, help
+The application follows the Model-View-Controller (MVC) design pattern:
 
-## Getting Started
+### Model Layer (`turtlegraphics.model`)
+- **TurtleModel**: Maintains turtle state (position, heading, pen state) and drawing history
+- **ModelObserver**: Interface for observing model changes
+
+### View Layer (`turtlegraphics.view`)
+- **TurtleView**: Main GUI window with command input and history display
+- **CanvasPanel**: Custom JPanel for rendering the turtle and drawn lines
+
+### Controller Layer (`turtlegraphics.controller`)
+- **TurtleController**: Processes commands and coordinates model updates
+- **Command Interface**: Encapsulates each turtle operation as an executable object
+- **Command Implementations**: MoveCommand, TurnCommand, PenUpCommand, PenDownCommand, ClearCommand, ResetCommand, QuitCommand, HelpCommand
+
+## Building and Running
 
 ### Prerequisites
 - Java 11 or later
 - Gradle (wrapper included)
 
-### Setup
+### Build the Application
 ```bash
-# Clone the repository
-git clone https://github.com/CS5004-5010-2026/TurtleGraphicsController.git
-cd TurtleGraphicsController
-
-# Verify it builds (tests will fail until you implement the controller)
 ./gradlew build
-
-# Run tests (will fail initially)
-./gradlew test
 ```
 
-### Implementation Steps
+### Run the GUI Application
+```bash
+./gradlew runGUI
+```
 
-1. **Implement TurtleController.executeCommand()**
-   - Parse command string into command name and arguments
-   - Look up command in command map
-   - Execute command and handle errors
-   - Provide feedback to view
-
-2. **Implement TurtleController.registerCommands()**
-   - Create instances of all 8 command classes
-   - Register them in the command map
-
-3. **Implement each Command.execute() method**
-   - MoveCommand - Parse distance, call model.move()
-   - TurnCommand - Parse angle, call model.turn()
-   - PenUpCommand - Call model.penUp()
-   - PenDownCommand - Call model.penDown()
-   - ClearCommand - Call model.clear()
-   - ResetCommand - Call model.reset()
-   - QuitCommand - Call System.exit(0)
-   - HelpCommand - Generate help text from command map
-
-4. **Run tests to verify**
-   ```bash
-   ./gradlew test
-   ```
-
-5. **Run the GUI**
-   ```bash
-   ./gradlew runGUI
-   ```
+### Run Tests
+```bash
+./gradlew test
+```
 
 ## Available Commands
 
 | Command | Usage | Description |
 |---------|-------|-------------|
-| `move` | `move <distance>` | Move turtle forward/backward |
-| `turn` | `turn <angle>` | Rotate turtle (positive = counterclockwise) |
-| `penup` | `penup` | Lift pen (stop drawing) |
-| `pendown` | `pendown` | Lower pen (start drawing) |
-| `clear` | `clear` | Clear all lines |
-| `reset` | `reset` | Reset to initial state |
-| `quit` | `quit` | Exit application |
-| `help` | `help` | Show available commands |
+| `move` | `move <distance>` | Move turtle forward (positive) or backward (negative) |
+| `turn` | `turn <angle>` | Rotate turtle by angle in degrees (positive = counterclockwise) |
+| `penup` | `penup` | Lift pen up (turtle moves without drawing) |
+| `pendown` | `pendown` | Put pen down (turtle draws lines as it moves) |
+| `clear` | `clear` | Clear all drawn lines (turtle position unchanged) |
+| `reset` | `reset` | Reset turtle to center, facing right, pen down, and clear canvas |
+| `quit` | `quit` | Exit the application |
+| `help` | `help` | Display list of available commands |
 
-## Testing Your Implementation
-
-All tests should pass when your implementation is complete:
-
-```bash
-./gradlew test
-```
-
-## Architecture
-
-### MVC Pattern
-- **Model** (Provided) - TurtleModel maintains state
-- **View** (Provided) - TurtleView displays GUI
-- **Controller** (You Build) - TurtleController processes commands
-
-### Command Pattern
-- Each command is an object implementing the Command interface
-- Commands are registered in a map for easy lookup
-- Supports extensibility - easy to add new commands
-
-## Example Drawing Sequences
+## Example Command Sequences
 
 ### Draw a Square
 ```
@@ -110,6 +73,7 @@ turn 90
 move 100
 turn 90
 move 100
+turn 90
 ```
 
 ### Draw a Triangle
@@ -119,6 +83,21 @@ turn 120
 move 100
 turn 120
 move 100
+turn 120
+```
+
+### Draw a Star
+```
+move 100
+turn 144
+move 100
+turn 144
+move 100
+turn 144
+move 100
+turn 144
+move 100
+turn 144
 ```
 
 ### Draw with Gaps
@@ -130,12 +109,96 @@ pendown
 move 50
 ```
 
-## Need Help?
+## Coordinate System
 
-- Check the Javadoc comments in the provided code
-- Review the test cases to understand expected behavior
-- Ask your instructor or TA
+- **Model Coordinates**: Origin at center of canvas, Y-axis points up
+- **Heading Convention**: 
+  - 0° = right (positive X-axis)
+  - 90° = up (positive Y-axis)
+  - 180° = left (negative X-axis)
+  - 270° = down (negative Y-axis)
+- **Rotation**: Positive angles rotate counterclockwise, negative angles rotate clockwise
+
+## Turtle Visualization
+
+- **Color**: 
+  - Red = pen is down (drawing)
+  - Blue = pen is up (not drawing)
+- **Shape**: Triangle pointing in the direction of the heading
+- **Size**: Approximately 20 pixels from base to tip
+
+## Project Structure
+
+```
+src/
+├── main/
+│   └── java/
+│       └── turtlegraphics/
+│           ├── TurtleGraphicsApp.java          # Main entry point
+│           ├── model/
+│           │   ├── TurtleModel.java            # Core data model
+│           │   └── ModelObserver.java          # Observer interface
+│           ├── view/
+│           │   ├── TurtleView.java             # Main GUI window
+│           │   └── CanvasPanel.java            # Canvas rendering
+│           └── controller/
+│               ├── TurtleController.java       # Command processor
+│               ├── Command.java                # Command interface
+│               ├── CommandException.java       # Command error handling
+│               └── [Command implementations]   # Individual commands
+└── test/
+    └── java/
+        └── turtlegraphics/
+            └── model/
+                ├── TurtleModelTest.java        # Unit tests
+                └── TurtleModelProperties.java  # Property-based tests
+```
+
+## Design Principles
+
+### MVC Separation
+- **Model** has no dependencies on View or Controller
+- **View** observes Model through the Observer pattern
+- **Controller** mediates between View and Model
+
+### Command Pattern
+- Each command is encapsulated as an object implementing the Command interface
+- Commands are registered in a map for easy lookup and execution
+- Supports easy addition of new commands without modifying existing code
+
+### Observer Pattern
+- Model notifies registered observers when state changes
+- View automatically refreshes when model updates
+- Decouples model from view implementation
+
+## Testing
+
+The project includes comprehensive testing:
+
+- **Unit Tests**: Test specific functionality and edge cases
+- **Property-Based Tests**: Verify universal correctness properties across many generated inputs
+- **Integration Tests**: Test complete command sequences and end-to-end functionality
+
+Run tests with:
+```bash
+./gradlew test
+```
+
+## Educational Use
+
+This application is designed for CS 5004/5010 courses to demonstrate:
+- Model-View-Controller architecture
+- Observer pattern
+- Command pattern
+- Java Swing GUI programming
+- Coordinate system transformations
+- Test-driven development
+- Property-based testing
 
 ## License
 
 Educational use only. Part of CS 5004/5010 course materials.
+
+## Authors
+
+CS 5004/5010 Course Staff

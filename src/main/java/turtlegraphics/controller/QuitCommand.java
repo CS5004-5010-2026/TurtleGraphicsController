@@ -18,12 +18,13 @@ public class QuitCommand implements Command {
     
     @Override
     public void execute(TurtleModel model, String[] args) throws CommandException {
-        // TODO: Implement quit command
-        // 1. Validate that no arguments are provided
-        // 2. Call System.exit(0) to terminate the application
-        // 3. Throw CommandException if validation fails
+        // Validate no arguments provided
+        if (args.length != 0) {
+            throw new CommandException("This command takes no arguments. Usage: " + getUsage());
+        }
         
-        throw new UnsupportedOperationException("TODO: Implement QuitCommand.execute");
+        // Exit the application
+        System.exit(0);
     }
     
     @Override

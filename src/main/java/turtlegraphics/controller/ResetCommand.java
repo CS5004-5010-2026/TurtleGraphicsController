@@ -24,12 +24,13 @@ public class ResetCommand implements Command {
     
     @Override
     public void execute(TurtleModel model, String[] args) throws CommandException {
-        // TODO: Implement reset command
-        // 1. Validate that no arguments are provided
-        // 2. Call model.reset()
-        // 3. Throw CommandException if validation fails
+        // Validate no arguments provided
+        if (args.length != 0) {
+            throw new CommandException("This command takes no arguments. Usage: " + getUsage());
+        }
         
-        throw new UnsupportedOperationException("TODO: Implement ResetCommand.execute");
+        // Execute reset
+        model.reset();
     }
     
     @Override

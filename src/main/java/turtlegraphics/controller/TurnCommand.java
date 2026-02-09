@@ -23,13 +23,21 @@ public class TurnCommand implements Command {
     
     @Override
     public void execute(TurtleModel model, String[] args) throws CommandException {
-        // TODO: Implement turn command
-        // 1. Validate that exactly 1 argument is provided
-        // 2. Parse the argument as a double (angle)
-        // 3. Call model.turn(angle)
-        // 4. Throw CommandException if validation fails
+        // Validate argument count
+        if (args.length != 1) {
+            throw new CommandException("Invalid number of arguments. Usage: " + getUsage());
+        }
         
-        throw new UnsupportedOperationException("TODO: Implement TurnCommand.execute");
+        // Parse angle argument
+        double angle;
+        try {
+            angle = Double.parseDouble(args[0]);
+        } catch (NumberFormatException e) {
+            throw new CommandException("Invalid angle: '" + args[0] + "' is not a valid number", e);
+        }
+        
+        // Execute the turn
+        model.turn(angle);
     }
     
     @Override

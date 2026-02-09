@@ -20,12 +20,13 @@ public class PenDownCommand implements Command {
     
     @Override
     public void execute(TurtleModel model, String[] args) throws CommandException {
-        // TODO: Implement pendown command
-        // 1. Validate that no arguments are provided
-        // 2. Call model.penDown()
-        // 3. Throw CommandException if validation fails
+        // Validate no arguments provided
+        if (args.length != 0) {
+            throw new CommandException("This command takes no arguments. Usage: " + getUsage());
+        }
         
-        throw new UnsupportedOperationException("TODO: Implement PenDownCommand.execute");
+        // Execute pen down
+        model.penDown();
     }
     
     @Override

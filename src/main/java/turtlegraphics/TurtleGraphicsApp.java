@@ -48,8 +48,12 @@ public class TurtleGraphicsApp {
      * @param args command-line arguments (not used)
      */
     public static void main(String[] args) {
+        System.out.println("Starting Turtle Graphics GUI...");
+        
         // Launch GUI on the Event Dispatch Thread for thread safety
         SwingUtilities.invokeLater(() -> {
+            System.out.println("Creating MVC components...");
+            
             // Create the model
             TurtleModel model = new TurtleModel();
             
@@ -64,6 +68,11 @@ public class TurtleGraphicsApp {
             
             // Display the GUI
             view.setVisible(true);
+            view.toFront();
+            view.requestFocus();
+            
+            System.out.println("GUI window should now be visible!");
+            System.out.println("If you don't see the window, check your Dock or use Cmd+Tab to find it.");
         });
     }
 }

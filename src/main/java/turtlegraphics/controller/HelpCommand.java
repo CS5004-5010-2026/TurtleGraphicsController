@@ -38,12 +38,16 @@ public class HelpCommand implements Command {
     
     @Override
     public void execute(TurtleModel model, String[] args) throws CommandException {
-        // TODO: Implement help command
-        // 1. Validate that no arguments are provided
-        // 2. Generate help text from commandMap
-        // 3. Throw CommandException with help text (special case for help command)
+        // Validate no arguments provided
+        if (args.length != 0) {
+            throw new CommandException("This command takes no arguments. Usage: " + getUsage());
+        }
         
-        throw new UnsupportedOperationException("TODO: Implement HelpCommand.execute");
+        // Help command doesn't modify the model, but we need to return help text
+        // The controller will handle displaying the help information
+        // This is a special case where the command needs to communicate back to the view
+        // For now, we'll throw a special exception with the help text
+        throw new CommandException(generateHelpText());
     }
     
     /**
@@ -52,13 +56,24 @@ public class HelpCommand implements Command {
      * @return a formatted string with all command usage and descriptions
      */
     private String generateHelpText() {
-        // TODO: Implement help text generation
-        // 1. Check if commandMap is null or empty
-        // 2. Build formatted string with all commands
-        // 3. Sort commands alphabetically
-        // 4. Format as: "usage - description"
+        if (commandMap == null || commandMap.isEmpty()) {
+            return "No commands available.";
+        }
         
-        throw new UnsupportedOperationException("TODO: Implement generateHelpText");
+        StringBuilder help = new StringBuilder();
+        help.append("Available commands:\n");
+        help.append("==================\n\n");
+        
+        // Sort commands alphabetically for consistent display
+        commandMap.entrySet().stream()
+            .sorted(Map.Entry.comparingByKey())
+            .forEach(entry -> {
+                String name = entry.getKey();
+                Command cmd = entry.getValue();
+                help.append(String.format("%-15s - %s\n", cmd.getUsage(), cmd.getDescription()));
+            });
+        
+        return help.toString();
     }
     
     @Override
