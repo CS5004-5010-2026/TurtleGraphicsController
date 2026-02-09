@@ -102,7 +102,6 @@ public class TurtleView extends JFrame implements ModelObserver {
         appendCommandHistory("=== Turtle Graphics Application ===");
         appendCommandHistory("Type 'help' for available commands");
         appendCommandHistory("");
-        displayMessage("Ready", false);
     }
     
     /**
@@ -134,25 +133,25 @@ public class TurtleView extends JFrame implements ModelObserver {
      * 
      * <p>Uses BorderLayout for the main frame with:</p>
      * <ul>
-     *   <li>Canvas in the center</li>
-     *   <li>Control panel (history, input, status) at the bottom</li>
+     *   <li>Canvas on the left</li>
+     *   <li>Command history and controls on the right</li>
      * </ul>
      */
     private void layoutComponents() {
         setLayout(new BorderLayout());
         
-        // Add canvas to center
+        // Add canvas to left side
         add(canvasPanel, BorderLayout.CENTER);
         
-        // Create bottom panel for controls
-        JPanel bottomPanel = new JPanel(new BorderLayout());
+        // Create right panel for command history and controls
+        JPanel rightPanel = new JPanel(new BorderLayout());
+        rightPanel.setPreferredSize(new Dimension(400, 600));
         
         // Command history in scrollable pane
         JScrollPane historyScroll = new JScrollPane(commandHistory);
-        historyScroll.setPreferredSize(new Dimension(800, 150));
-        bottomPanel.add(historyScroll, BorderLayout.CENTER);
+        rightPanel.add(historyScroll, BorderLayout.CENTER);
         
-        // Input panel
+        // Input panel at bottom of right side
         JPanel inputPanel = new JPanel(new BorderLayout());
         inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         
@@ -160,14 +159,9 @@ public class TurtleView extends JFrame implements ModelObserver {
         inputPanel.add(inputLabel, BorderLayout.WEST);
         inputPanel.add(commandInput, BorderLayout.CENTER);
         
-        // Create a panel for input and status
-        JPanel controlPanel = new JPanel(new BorderLayout());
-        controlPanel.add(inputPanel, BorderLayout.NORTH);
-        controlPanel.add(statusLabel, BorderLayout.SOUTH);
+        rightPanel.add(inputPanel, BorderLayout.SOUTH);
         
-        bottomPanel.add(controlPanel, BorderLayout.SOUTH);
-        
-        add(bottomPanel, BorderLayout.SOUTH);
+        add(rightPanel, BorderLayout.EAST);
     }
     
     /**
@@ -175,19 +169,29 @@ public class TurtleView extends JFrame implements ModelObserver {
      * 
      * <p>Called when the user presses Enter in the command input field.
      * Forwards the command to the controller for execution and updates the
-     * command history.</p>
+     * command history. Supports multi-line input by splitting on newlines
+     * and executing each command sequentially.</p>
      * 
      * @param event the action event (not used)
      */
     private void handleCommandInput(ActionEvent event) {
-        String commandLine = commandInput.getText().trim();
+        String input = commandInput.getText().trim();
         
-        if (!commandLine.isEmpty()) {
-            // Display command in history
-            appendCommandHistory("> " + commandLine);
+        if (!input.isEmpty()) {
+            // Split on newlines to support pasting multiple commands
+            String[] commands = input.split("\\r?\\n");
             
-            // Execute command through controller
-            controller.executeCommand(commandLine);
+            for (String commandLine : commands) {
+                commandLine = commandLine.trim();
+                
+                if (!commandLine.isEmpty()) {
+                    // Display command in history
+                    appendCommandHistory("> " + commandLine);
+                    
+                    // Execute command through controller
+                    controller.executeCommand(commandLine);
+                }
+            }
             
             // Clear input field
             commandInput.setText("");
@@ -210,13 +214,15 @@ public class TurtleView extends JFrame implements ModelObserver {
     }
     
     /**
-     * Displays a message in the status bar.
+     * Displays a message in the status bar and console.
      * 
-     * <p>Messages are color-coded:</p>
+     * <p>Messages are color-coded in the GUI:</p>
      * <ul>
      *   <li>Error messages: Red text</li>
      *   <li>Success messages: Black text</li>
      * </ul>
+     * 
+     * <p>Messages are also printed to the console for debugging.</p>
      * 
      * @param message the message to display
      * @param isError true if this is an error message, false otherwise
@@ -224,13 +230,21 @@ public class TurtleView extends JFrame implements ModelObserver {
     public void displayMessage(String message, boolean isError) {
         statusLabel.setText(message);
         statusLabel.setForeground(isError ? Color.RED : Color.BLACK);
+        
+        // Also print to console
+        if (isError) {
+            System.err.println("[ERROR] " + message);
+        } else {
+            System.out.println("[INFO] " + message);
+        }
     }
     
     /**
-     * Appends text to the command history.
+     * Appends text to the command history and console.
      * 
      * <p>The text is added to the end of the history text area, and the view
-     * is automatically scrolled to show the new text.</p>
+     * is automatically scrolled to show the new text. The text is also printed
+     * to the console.</p>
      * 
      * @param text the text to append
      */
@@ -239,5 +253,8 @@ public class TurtleView extends JFrame implements ModelObserver {
         
         // Auto-scroll to bottom
         commandHistory.setCaretPosition(commandHistory.getDocument().getLength());
+        
+        // Also print to console
+        System.out.println(text);
     }
 }

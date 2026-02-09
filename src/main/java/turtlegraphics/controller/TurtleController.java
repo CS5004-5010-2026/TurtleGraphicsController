@@ -100,24 +100,95 @@ public class TurtleController {
      * The command name is looked up in the command map, and if found, the command is executed
      * with the provided arguments.</p>
      * 
+     * <p>Supports multiple commands separated by semicolons (;) for batch execution.</p>
+     * 
      * <p>If the command executes successfully, the view is notified with a success message.
      * If the command fails (invalid command, invalid arguments, or execution error), the view
      * is notified with an error message.</p>
      * 
      * <p>This method never throws exceptions - all errors are caught and reported to the view.</p>
      * 
-     * @param commandLine the complete command string entered by the user (e.g., "move 100")
+     * @param commandLine the complete command string entered by the user (e.g., "move 100" or "move 10; turn 90")
      */
     public void executeCommand(String commandLine) {
-        // TODO: Implement command execution
-        // 1. Handle empty or null input
-        // 2. Parse command line into command name and arguments (split on whitespace)
-        // 3. Look up command in command map
-        // 4. If command not found, display error message
-        // 5. If command found, execute it and handle any exceptions
-        // 6. Display success or error message to view
+        // Handle empty or null input
+        if (commandLine == null || commandLine.trim().isEmpty()) {
+            if (view != null) {
+                view.displayMessage("Please enter a command", true);
+            }
+            return;
+        }
         
-        throw new UnsupportedOperationException("TODO: Implement executeCommand");
+        // Split on semicolons to support batch commands
+        String[] commands = commandLine.split(";");
+        
+        for (String singleCommand : commands) {
+            executeSingleCommand(singleCommand.trim());
+        }
+    }
+    
+    /**
+     * Executes a single command (helper method for executeCommand).
+     * 
+     * @param commandLine a single command string (e.g., "move 100")
+     */
+    private void executeSingleCommand(String commandLine) {
+        if (commandLine.isEmpty()) {
+            return;
+        }
+        
+        // Parse command line into command name and arguments
+        String[] parts = commandLine.trim().split("\\s+");
+        String commandName = parts[0].toLowerCase();
+        String[] args = new String[parts.length - 1];
+        System.arraycopy(parts, 1, args, 0, args.length);
+        
+        // Look up command in command map
+        Command command = commandMap.get(commandName);
+        
+        if (command == null) {
+            // Unknown command
+            if (view != null) {
+                view.displayMessage("Unknown command: '" + commandName + "'. Type 'help' for available commands.", true);
+            }
+            return;
+        }
+        
+        // Execute the command
+        try {
+            command.execute(model, args);
+            
+            // Notify view of success - add to command history
+            if (view != null) {
+                if (!commandName.equals("help")) {
+                    view.appendCommandHistory("  ✓ Success");
+                }
+            }
+        } catch (CommandException e) {
+            // Command execution failed - notify view with error message
+            if (view != null) {
+                // Special handling for help command which uses exception to return help text
+                if (commandName.equals("help")) {
+                    view.appendCommandHistory("");
+                    view.appendCommandHistory(e.getMessage());
+                    view.appendCommandHistory("");
+                } else {
+                    view.appendCommandHistory("  ✗ Error: " + e.getMessage());
+                }
+            }
+        } catch (NumberFormatException e) {
+            // Number parsing failed
+            if (view != null) {
+                view.appendCommandHistory("  ✗ Error: Invalid number format in arguments");
+            }
+        } catch (Exception e) {
+            // Unexpected error - log and notify view
+            System.err.println("Unexpected error executing command: " + e.getMessage());
+            e.printStackTrace();
+            if (view != null) {
+                view.appendCommandHistory("  ✗ Unexpected error: " + e.getMessage());
+            }
+        }
     }
     
     /**
@@ -129,9 +200,18 @@ public class TurtleController {
      * <p>This method is called by the constructor and should not be called externally.</p>
      */
     private void registerCommands() {
-        // TODO: Register all command implementations
-        // Example: commandMap.put("move", new MoveCommand());
+        // Register all command implementations
+        commandMap.put("move", new MoveCommand());
+        commandMap.put("turn", new TurnCommand());
+        commandMap.put("penup", new PenUpCommand());
+        commandMap.put("pendown", new PenDownCommand());
+        commandMap.put("clear", new ClearCommand());
+        commandMap.put("reset", new ResetCommand());
+        commandMap.put("quit", new QuitCommand());
         
-        throw new UnsupportedOperationException("TODO: Implement registerCommands");
+        // Register help command with reference to command map
+        HelpCommand helpCommand = new HelpCommand();
+        helpCommand.setCommandMap(commandMap);
+        commandMap.put("help", helpCommand);
     }
 }
