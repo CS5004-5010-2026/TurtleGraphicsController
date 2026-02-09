@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'edu.neu.cs5004'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testImplementation 'net.jqwik:jqwik:1.8.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+application {
+    mainClass = 'turtle.TurtleMain'
+}
+
+tasks.named('test') {
+    useJUnitPlatform {
+        includeEngines 'jqwik', 'junit-jupiter'
+    }
+    include '**/*Properties.class'
+    include '**/*Test.class'
+    include '**/*Tests.class'
+}
+
+compileTestJava {
+    // To enable argument names in reporting and debugging
+    options.compilerArgs += '-parameters'
+}
+
+// Custom task to run with console input
+task runInteractive(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'turtle.TurtleMain'
+    standardInput = System.in
+}
+
+// Task to run the GUI application
+task runGUI(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'turtlegraphics.TurtleGraphicsApp'
+}

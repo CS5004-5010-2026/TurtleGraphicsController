@@ -1,0 +1,41 @@
+# Turtle Graphics Demo
+
+## To run interactively:
+./gradlew run
+
+## Example session:
+Turtle Graphics Controller
+Type 'quit' to exit
+
+> move 100
+Turtle at (100.0, 0.0), heading 0.0°, pen down
+
+> turn 90
+Turtle at (100.0, 0.0), heading 90.0°, pen down
+
+> move 100
+Turtle at (100.0, 100.0), heading 90.0°, pen down
+
+> turn 90
+Turtle at (100.0, 100.0), heading 180.0°, pen down
+
+> move 100
+Turtle at (0.0, 100.0), heading 180.0°, pen down
+
+> turn 90
+Turtle at (0.0, 100.0), heading 270.0°, pen down
+
+> move 100
+Turtle at (0.0, 0.0), heading 270.0°, pen down
+
+> trace
+Drawing path:
+  (0.0, 0.0) -> (100.0, 0.0)
+  (100.0, 0.0) -> (100.0, 100.0)
+  (100.0, 100.0) -> (0.0, 100.0)
+  (0.0, 100.0) -> (0.0, 0.0)
+
+> quit
+Goodbye!
+
+## The turtle drew a square!
