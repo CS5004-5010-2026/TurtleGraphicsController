@@ -100,13 +100,15 @@ public class TurtleController {
      * The command name is looked up in the command map, and if found, the command is executed
      * with the provided arguments.</p>
      * 
+     * <p>Supports multiple commands separated by semicolons (;) for batch execution.</p>
+     * 
      * <p>If the command executes successfully, the view is notified with a success message.
      * If the command fails (invalid command, invalid arguments, or execution error), the view
      * is notified with an error message.</p>
      * 
      * <p>This method never throws exceptions - all errors are caught and reported to the view.</p>
      * 
-     * @param commandLine the complete command string entered by the user (e.g., "move 100")
+     * @param commandLine the complete command string entered by the user (e.g., "move 100" or "move 10; turn 90")
      */
     public void executeCommand(String commandLine) {
         // Handle empty or null input
@@ -114,6 +116,24 @@ public class TurtleController {
             if (view != null) {
                 view.displayMessage("Please enter a command", true);
             }
+            return;
+        }
+        
+        // Split on semicolons to support batch commands
+        String[] commands = commandLine.split(";");
+        
+        for (String singleCommand : commands) {
+            executeSingleCommand(singleCommand.trim());
+        }
+    }
+    
+    /**
+     * Executes a single command (helper method for executeCommand).
+     * 
+     * @param commandLine a single command string (e.g., "move 100")
+     */
+    private void executeSingleCommand(String commandLine) {
+        if (commandLine.isEmpty()) {
             return;
         }
         

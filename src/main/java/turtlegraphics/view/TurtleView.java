@@ -169,19 +169,29 @@ public class TurtleView extends JFrame implements ModelObserver {
      * 
      * <p>Called when the user presses Enter in the command input field.
      * Forwards the command to the controller for execution and updates the
-     * command history.</p>
+     * command history. Supports multi-line input by splitting on newlines
+     * and executing each command sequentially.</p>
      * 
      * @param event the action event (not used)
      */
     private void handleCommandInput(ActionEvent event) {
-        String commandLine = commandInput.getText().trim();
+        String input = commandInput.getText().trim();
         
-        if (!commandLine.isEmpty()) {
-            // Display command in history
-            appendCommandHistory("> " + commandLine);
+        if (!input.isEmpty()) {
+            // Split on newlines to support pasting multiple commands
+            String[] commands = input.split("\\r?\\n");
             
-            // Execute command through controller
-            controller.executeCommand(commandLine);
+            for (String commandLine : commands) {
+                commandLine = commandLine.trim();
+                
+                if (!commandLine.isEmpty()) {
+                    // Display command in history
+                    appendCommandHistory("> " + commandLine);
+                    
+                    // Execute command through controller
+                    controller.executeCommand(commandLine);
+                }
+            }
             
             // Clear input field
             commandInput.setText("");
